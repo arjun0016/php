@@ -1,0 +1,76 @@
+php_value display_errors On
+php_value mbstring.http_input auto
+php_value date.timezone America/New_York
+<FilesMatch "\.(css|flv|htm|html|js|pdf|swf|txt)$">
+ 	<IfModule mod_expires.c>
+	ExpiresActive Off
+ 	</IfModule>
+ 	<IfModule mod_headers.c>
+	FileETag None
+	Header unset ETag
+	Header unset Pragma
+	Header unset Cache-Control
+	Header unset Last-Modified
+	Header set Pragma "no-cache"
+	Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+	Header set Expires "Thu, 1 Jan 1970 00:00:00 GMT"
+ 	</IfModule>
+</FilesMatch>
+
+
+ExpiresActive on
+
+ExpiresByType image/jpg "access plus 60 days"
+ExpiresByType image/png "access plus 60 days"
+ExpiresByType image/webp "access plus 60 days"
+ExpiresByType image/gif "access plus 60 days"
+ExpiresByType image/jpeg "access plus 60 days"
+
+ExpiresByType text/css "access plus 2 weeks"
+ExpiresByType image/x-icon "access plus 2 weeks"
+
+ExpiresByType application/pdf "access plus 1 month"
+ExpiresByType audio/x-wav "access plus 1 month"
+ExpiresByType audio/mpeg "access plus 1 month"
+ExpiresByType video/mpeg "access plus 1 month"
+ExpiresByType video/mp4 "access plus 1 month"
+ExpiresByType video/quicktime "access plus 1 month"
+ExpiresByType video/x-ms-wmv "access plus 1 month"
+ExpiresByType application/x-shockwave-flash "access 1 month"
+
+ExpiresByType text/javascript "access plus 2 weeks"
+ExpiresByType application/x-javascript "access plus 2 weeks"
+ExpiresByType application/javascript "access plus 2 weeks"
+
+
+RewriteEngine on
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+DirectoryIndex index.php admin_panel.php
+Options -Indexes
+
+ErrorDocument 400 /error_400.php
+ErrorDocument 401 /error_401.php
+ErrorDocument 403 /error_403.php
+ErrorDocument 404 /error_404.php
+ErrorDocument 503 /error_503.php
+
+# BEGIN Security Block
+# Block the include-only files.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^wp-admin/includes/ - [F,L]
+RewriteRule !^wp-includes/ - [S=3]
+RewriteRule ^wp-includes/[^/]+\.php$ - [F,L]
+RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F,L]
+RewriteRule ^wp-includes/theme-compat/ - [F,L]
+</IfModule>
+
+# Disable directory listing
+Options All -Indexes
+
+# Remove header with PHP version
+Header always unset X-Powered-By
+Header unset X-Powered-By
+# END Security Block
